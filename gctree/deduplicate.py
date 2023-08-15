@@ -46,14 +46,9 @@ def fasta_parse(aln_file, root, frame=None, aln_file2=None, id_abundances=False)
         end = sequence_length
 
     seqs_unique_counts = defaultdict(list)
-    id_set = set()
     root_seq = None
-    for seq in aln:
+    for i, seq in enumerate(aln):
         # if id is just an integer, assume it represents count of that sequence
-        if seq.id in id_set:
-            raise ValueError("Sequence ID found multiple times:", seq.id)
-        else:
-            id_set.add(seq.id)
         seqstr = str(seq.seq)[start:end].upper()
         if seq.id == root:
             root_seq = seqstr
@@ -62,7 +57,7 @@ def fasta_parse(aln_file, root, frame=None, aln_file2=None, id_abundances=False)
                     seqstr
                 ] = []  # no observed root unless we see it elsewhere
         elif seq.id.isdigit() and id_abundances:
-            seqs_unique_counts[seqstr] = [seq.id for _ in range(int(seq.id))]
+            seqs_unique_counts[seqstr].extend([str(i) for _ in range(int(seq.id))])
         else:
             seqs_unique_counts[seqstr].append(seq.id)
 
